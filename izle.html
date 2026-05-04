@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Canlı İzleme Paneli</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        body { background: #000; color: #38bdf8; font-family: sans-serif; text-align: center; }
+        #remote-video { width: 90%; max-width: 1000px; border: 3px solid #38bdf8; border-radius: 15px; margin-top: 20px; box-shadow: 0 0 20px #38bdf8; }
+        .panel { background: #1e293b; padding: 20px; border-radius: 10px; margin: 20px auto; width: fit-content; }
+        input { padding: 10px; border-radius: 5px; border: none; width: 300px; }
+        button { padding: 10px 20px; background: #38bdf8; color: #000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Canlı İzleme Paneli</h1>
+    <div class="panel">
+        <input type="text" id="remote-id" placeholder="a403c82f-d96e-46f3-b3fb-d43a97c8328e
+">
+        <button id="connect-btn">BAĞLAN VE İZLE</button>
+    </div>
+    <video id="remote-video" autoplay playsinline></video>
+
+    <script>
+        const peer = new Peer();
+        const videoElement = document.getElementById('remote-video');
+
+        document.getElementById('connect-btn').addEventListener('click', () => {
+            const remoteId = document.getElementById('remote-id').value;
+            
+            // Karşı tarafa boş bir arama başlatıyoruz
+            const call = peer.call(remoteId, new MediaStream());
+            
+            call.on('stream', (remoteStream) => {
+                // Karşıdan görüntü geldiğinde video etiketine bağla
+                videoElement.srcObject = remoteStream;
+                console.log("Görüntü alındı!");
+            });
+            
+            call.on('error', (err) => {
+                alert("Bağlantı hatası: " + err);
+            });
+        });
+    </script>
+</body>
+</html>
